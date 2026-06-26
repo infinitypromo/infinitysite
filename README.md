@@ -1,2 +1,0 @@
-# Infinity-site
-Site base
