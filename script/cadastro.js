@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAjob3asnTK4WIf8-KfXR6vPgb2T1kLOvY",
@@ -13,15 +13,18 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-document.getElementById("btnEntrar").onclick = async () => {
+document.getElementById("btnCadastrar").onclick = async () => {
     const email = document.getElementById("email").value;
     const senha = document.getElementById("password").value;
+    const confirmar = document.getElementById("confirmarSenha").value;
 
     const emailError = document.getElementById("emailError");
     const senhaError = document.getElementById("senhaError");
+    const confirmarError = document.getElementById("confirmarError");
 
     emailError.innerText = "";
     senhaError.innerText = "";
+    confirmarError.innerText = "";
 
     if (!email) {
         emailError.innerText = "Digite seu email";
@@ -31,30 +34,24 @@ document.getElementById("btnEntrar").onclick = async () => {
         senhaError.innerText = "Digite sua senha";
         return;
     }
-
-    try {
-        await signInWithEmailAndPassword(auth, email, senha);
-        window.location.href = "index.html";
-    } catch (error) {
-        senhaError.innerText = "Email ou senha incorretos";
+    if (senha.length < 6) {
+        senhaError.innerText = "Senha deve ter no mínimo 6 caracteres";
+        return;
     }
-};
-
-document.getElementById("btnEsqueci").onclick = async () => {
-    const email = document.getElementById("email").value;
-    const emailError = document.getElementById("emailError");
-
-    emailError.innerText = "";
-
-    if (!email) {
-        emailError.innerText = "Digite seu email primeiro";
+    if (senha !== confirmar) {
+        confirmarError.innerText = "As senhas não coincidem";
         return;
     }
 
     try {
-        await sendPasswordResetEmail(auth, email);
-        alert("Email de redefinição enviado! Verifique sua caixa de entrada.");
+        await createUserWithEmailAndPassword(auth, email, senha);
+        alert("Conta criada com sucesso!");
+        window.location.href = "login.html";
     } catch (error) {
-        emailError.innerText = "Email não encontrado";
+        if (error.code === "auth/email-already-in-use") {
+            emailError.innerText = "Este email já está cadastrado";
+        } else {
+            emailError.innerText = "Erro ao cadastrar, tente novamente";
+        }
     }
 };
