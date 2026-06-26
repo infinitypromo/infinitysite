@@ -7,16 +7,18 @@
 </head>
 <body>
     <form id="loginForm">
-        <h3>email</h3>
-    <input type ="email" id="email"> <br>
-    <canvas>ajeita esses botao, n sei qual o identificcador certo, mas o id ta certo</canvas>
-    <button type="button" id = "emailError"> </button>
-    <button type="button" id = "senhaError"> </button>
-        <h3>senha</h3>
-    <input type ="password" id="password">
+        <h3>Email</h3>
+        <input type="email" id="email">
+        <span id="emailError" style="color:red"></span>
+
+        <h3>Senha</h3>
+        <input type="password" id="password">
+        <span id="senhaError" style="color:red"></span>
+
+        <br><br>
+        <button type="button" id="btnEntrar">Entrar</button>
     </form>
-    <form>
-    <button type="submit" id = "toggleSenha"> </button>
-    </form>
+
+    <script src="script.js"></script>
 </body>
 </html>
