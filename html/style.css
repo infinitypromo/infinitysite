@@ -6,7 +6,6 @@
     border-bottom: none;
     border-style: hidden;
     margin-top: 10px;
-    margin-left: 1825px;
     letter-spacing: 1px;
     cursor: pointer;
     transition: all 1s ease;
@@ -32,4 +31,43 @@
 }
 .logo:hover{
     opacity: 1.1;
+}
+.paginalogin{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: rgb(119, 119, 119);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.entrarfundo{
+    background-color: rgb(80, 80, 80);
+    padding: 40px;
+    border-radius: 8px;
+    width: 300px;
+    text-align: center;
+}
+.h3login1{
+    margin-top: 20px;
+    margin-bottom: 5px;
+    text-align: left;
+}
+.h3login2{
+    margin-top: 20px;
+    margin-bottom: 5px;
+    text-align: left;
+}
+.senha1{
+    width: 100%;
+    padding: 8px;
+    text-align: center;
+}
+#email{
+    width: 100%;
+    padding: 8px;
+    text-align: center;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
 }
