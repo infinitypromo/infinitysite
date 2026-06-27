@@ -41,7 +41,7 @@ document.getElementById("btnCadastrar").onclick = async () => {
         const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
         const user = userCredential.user;
 
-        // Cria o perfil no Firestore
+        
         await setDoc(doc(db, "usuarios", user.uid), {
             username: username,
             email: email,

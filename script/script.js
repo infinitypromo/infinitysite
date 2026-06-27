@@ -1,5 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAjob3asnTK4WIf8-KfXR6vPgb2T1kLOvY",
@@ -12,50 +13,66 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
-document.getElementById("btnEntrar").onclick = async () => {
-    const email = document.getElementById("email").value;
+document.getElementById("btnCadastrar").onclick = async () => {
+    const username = document.getElementById("username").value.trim();
+    const email = document.getElementById("email").value.trim();
     const senha = document.getElementById("password").value;
+    const confirmar = document.getElementById("confirmarSenha").value;
 
+    const usernameError = document.getElementById("usernameError");
     const emailError = document.getElementById("emailError");
     const senhaError = document.getElementById("senhaError");
+    const confirmarError = document.getElementById("confirmarError");
 
+    usernameError.innerText = "";
     emailError.innerText = "";
     senhaError.innerText = "";
+    confirmarError.innerText = "";
 
+    if (!username) { usernameError.innerText = "Digite um nome de usuário"; return; }
     if (!email) { emailError.innerText = "Digite seu email"; return; }
     if (!senha) { senhaError.innerText = "Digite sua senha"; return; }
+    if (senha.length < 6) { senhaError.innerText = "Mínimo 6 caracteres"; return; }
+    if (senha !== confirmar) { confirmarError.innerText = "As senhas não coincidem"; return; }
 
     try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, senha);
-        const user = userCredential.user;
-
-        if (!user.emailVerified) {
-            senhaError.innerText = "Verifique seu email antes de entrar.";
-            // Manda outro email caso não tenha recebido
-            await sendEmailVerification(user);
-            alert("Email de verificação reenviado! Verifique sua caixa de entrada.");
+        
+        const usernameDoc = await getDoc(doc(db, "usernames", username));
+        if (usernameDoc.exists()) {
+            usernameError.innerText = "Nome de usuário já está em uso";
             return;
         }
 
-        window.location.href = "index.html";
+        
+        const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
+        const user = userCredential.user;
+
+        
+        await setDoc(doc(db, "usernames", username), {
+            uid: user.uid
+        });
+
+        
+        await setDoc(doc(db, "usuarios", user.uid), {
+            username: username,
+            email: email,
+            bio: "",
+            fotoPerfil: "",
+            dataCadastro: new Date().toISOString()
+        });
+
+        await sendEmailVerification(user);
+        alert("Conta criada! Verifique seu email para ativar a conta.");
+        window.location.href = "login.html";
+
     } catch (error) {
-        senhaError.innerText = "Email ou senha incorretos";
-    }
-};
-
-document.getElementById("btnEsqueci").onclick = async () => {
-    const email = document.getElementById("email").value;
-    const emailError = document.getElementById("emailError");
-
-    emailError.innerText = "";
-
-    if (!email) { emailError.innerText = "Digite seu email primeiro"; return; }
-
-    try {
-        await sendPasswordResetEmail(auth, email);
-        alert("Email de redefinição enviado! Verifique sua caixa de entrada.");
-    } catch (error) {
-        emailError.innerText = "Email não encontrado";
+        if (error.code === "auth/email-already-in-use") {
+            emailError.innerText = "Este email já está cadastrado";
+        } else {
+            emailError.innerText = "Erro ao cadastrar, tente novamente";
+            console.error(error);
+        }
     }
 };
