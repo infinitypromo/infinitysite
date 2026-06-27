@@ -4,33 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <h2>Criar conta</h2>
-
+<body class="paginalogin">
+    <img src="logobranca.png" alt="Ícone" class="logobranca">
     <form id="cadastroForm">
-        <h3>Email</h3>
-        <input type="email" id="email">
+        <div class="entrarfundo">
+        <div class="tabs">
+            <a href="login.html" class="tab">Login</a>
+            <a href="cadastro.html" class="tab active">Cadastrar</a>
+        </div>
+        <input type="email" id="email" class="inputfield" placeholder="Enter your email">
         <span id="emailError" style="color:red"></span>
 
-        <h3>Senha</h3>
-        <input type="password" id="password">
+        <input type="password" id="password" class="inputfield" placeholder="password">
         <span id="senhaError" style="color:red"></span>
 
-        <h3>Confirmar senha</h3>
-        <input type="password" id="confirmarSenha">
+        <input type="password" id="confirmarSenha" class="inputfield" placeholder="confirm password">
         <span id="confirmarError" style="color:red"></span>
 
-        <h3>Nome de usuário</h3>
-    <input type="text" id="username">
+    <input type="text" id="username" class="inputfield" placeholder="username">
     <span id="usernameError" style="color:red"></span>
 
         <br><br>
-        <button type="button" id="btnCadastrar">Cadastrar</button>
+        <button type="button" id="btnCadastrar" class="btnentrar">Cadastrar</button>
     </form>
-
-    <p>Já tem conta? <a href="login.html">Entrar</a></p>
-
     <script type="module" src="../script/cadastro.js"></script>
 </body>
 </html>
