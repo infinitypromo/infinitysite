@@ -1,5 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAjob3asnTK4WIf8-KfXR6vPgb2T1kLOvY",
@@ -12,40 +13,45 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
 
 document.getElementById("btnCadastrar").onclick = async () => {
     const email = document.getElementById("email").value;
     const senha = document.getElementById("password").value;
     const confirmar = document.getElementById("confirmarSenha").value;
+    const username = document.getElementById("username").value;
 
     const emailError = document.getElementById("emailError");
     const senhaError = document.getElementById("senhaError");
     const confirmarError = document.getElementById("confirmarError");
+    const usernameError = document.getElementById("usernameError");
 
     emailError.innerText = "";
     senhaError.innerText = "";
     confirmarError.innerText = "";
+    usernameError.innerText = "";
 
-    if (!email) {
-        emailError.innerText = "Digite seu email";
-        return;
-    }
-    if (!senha) {
-        senhaError.innerText = "Digite sua senha";
-        return;
-    }
-    if (senha.length < 6) {
-        senhaError.innerText = "Senha deve ter no mínimo 6 caracteres";
-        return;
-    }
-    if (senha !== confirmar) {
-        confirmarError.innerText = "As senhas não coincidem";
-        return;
-    }
+    if (!username) { usernameError.innerText = "Digite um nome de usuário"; return; }
+    if (!email) { emailError.innerText = "Digite seu email"; return; }
+    if (!senha) { senhaError.innerText = "Digite sua senha"; return; }
+    if (senha.length < 6) { senhaError.innerText = "Mínimo 6 caracteres"; return; }
+    if (senha !== confirmar) { confirmarError.innerText = "As senhas não coincidem"; return; }
 
     try {
-        await createUserWithEmailAndPassword(auth, email, senha);
-        alert("Conta criada com sucesso!");
+        const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
+        const user = userCredential.user;
+
+        // Cria o perfil no Firestore
+        await setDoc(doc(db, "usuarios", user.uid), {
+            username: username,
+            email: email,
+            bio: "",
+            fotoPerfil: "",
+            dataCadastro: new Date().toISOString()
+        });
+
+        await sendEmailVerification(user);
+        alert("Conta criada! Verifique seu email para ativar a conta.");
         window.location.href = "login.html";
     } catch (error) {
         if (error.code === "auth/email-already-in-use") {

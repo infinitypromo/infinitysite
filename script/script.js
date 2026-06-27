@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAjob3asnTK4WIf8-KfXR6vPgb2T1kLOvY",
@@ -23,17 +23,21 @@ document.getElementById("btnEntrar").onclick = async () => {
     emailError.innerText = "";
     senhaError.innerText = "";
 
-    if (!email) {
-        emailError.innerText = "Digite seu email";
-        return;
-    }
-    if (!senha) {
-        senhaError.innerText = "Digite sua senha";
-        return;
-    }
+    if (!email) { emailError.innerText = "Digite seu email"; return; }
+    if (!senha) { senhaError.innerText = "Digite sua senha"; return; }
 
     try {
-        await signInWithEmailAndPassword(auth, email, senha);
+        const userCredential = await signInWithEmailAndPassword(auth, email, senha);
+        const user = userCredential.user;
+
+        if (!user.emailVerified) {
+            senhaError.innerText = "Verifique seu email antes de entrar.";
+            // Manda outro email caso não tenha recebido
+            await sendEmailVerification(user);
+            alert("Email de verificação reenviado! Verifique sua caixa de entrada.");
+            return;
+        }
+
         window.location.href = "index.html";
     } catch (error) {
         senhaError.innerText = "Email ou senha incorretos";
@@ -46,10 +50,7 @@ document.getElementById("btnEsqueci").onclick = async () => {
 
     emailError.innerText = "";
 
-    if (!email) {
-        emailError.innerText = "Digite seu email primeiro";
-        return;
-    }
+    if (!email) { emailError.innerText = "Digite seu email primeiro"; return; }
 
     try {
         await sendPasswordResetEmail(auth, email);
