@@ -3,12 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>pag inicial</title>
+    <title>Infinity</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body style="margin: 0%;" class="index">
-    <div><button onclick="window.location.href='login.html'" class="botaoentrar">ENTRAR</button></div>
-    <img src="logobranca.png" alt="Ícone" class="logo">
-    <script src="script.js"></script>
+<body>
+    <img src="imgs/logo.png" alt="Ícone" class="logo">
+    <div class="profile-container">
+  
+  <button class="profile-btn" onclick="toggleMenu()">
+    <img src="imgs/ftperfil.jpg" alt="">
+  </button>
+    <div class="profile-menu" id="profileMenu">
+        <div id="secaoLogado">
+        <div class="menu-header">
+            <span class="menu-logo"><img src="imgs/ftperfil.jpg" alt=""></span> <strong class="menu-nome">augusto</strong>
+        </div>
+        <hr>
+        <a href="#">Configurações</a>
+        <a href="#">Ajuda</a>
+        <a href="#" onclick="simularLogout()" class="link-sair">Sair</a>
+        </div>
+
+        <div id="secaoDeslogado" style="display: none;">
+        <p class="msg-visitante">Você não está conectado.</p>
+        <a href="login.html"><button class="btn-entrar">Entrar</button></a>
+        </div>
+
+        </div>
+    </div>
+
+    <script src="../script/dropdown.js"></script>
+    <script src="../script/script.js"></script>
 </body>
 </html>
